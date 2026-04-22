@@ -186,7 +186,9 @@
         let currentStage = Stage.WORK;
         let completedPomodoros = 0;
         let timeRemaining = StageDurations[currentStage];
-        let timerInterval = null;
+        let startTime = null;
+        let endTime = null;
+        let animationFrameId = null;
         let isRunning = false;
 
         const timerDisplay = document.getElementById('timerDisplay');
@@ -256,20 +258,37 @@
         }
 
         function startTimer() {
-            if (timerInterval) return;
+            if (isRunning) return;
             
             isRunning = true;
             startBtn.textContent = '暂停';
             startBtn.className = 'btn-pause';
             
-            timerInterval = setInterval(() => {
-                if (timeRemaining > 0) {
-                    timeRemaining--;
+            startTime = Date.now();
+            endTime = startTime + (timeRemaining * 1000);
+            
+            function tick() {
+                if (!isRunning) return;
+                
+                const now = Date.now();
+                const remaining = Math.ceil((endTime - now) / 1000);
+                
+                if (remaining <= 0) {
+                    timeRemaining = 0;
                     updateDisplay();
-                } else {
                     stageComplete();
+                    return;
                 }
-            }, 1000);
+                
+                if (remaining !== timeRemaining) {
+                    timeRemaining = remaining;
+                    updateDisplay();
+                }
+                
+                animationFrameId = requestAnimationFrame(tick);
+            }
+            
+            tick();
         }
 
         function pauseTimer() {
@@ -277,9 +296,16 @@
             startBtn.textContent = '开始';
             startBtn.className = 'btn-start';
             
-            if (timerInterval) {
-                clearInterval(timerInterval);
-                timerInterval = null;
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
+            
+            if (endTime) {
+                const now = Date.now();
+                const remaining = Math.ceil((endTime - now) / 1000);
+                timeRemaining = Math.max(0, remaining);
+                updateDisplay();
             }
         }
 
