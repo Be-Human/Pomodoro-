@@ -136,9 +136,192 @@
         button:active {
             transform: translateY(0);
         }
+
+        .settings-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 14px;
+            min-width: auto;
+        }
+
+        .settings-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .settings-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .settings-modal.show {
+            display: flex;
+        }
+
+        .settings-panel {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 24px;
+            padding: 40px;
+            width: 450px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .settings-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .close-btn {
+            background: none;
+            color: #999;
+            font-size: 24px;
+            padding: 0;
+            min-width: auto;
+            line-height: 1;
+        }
+
+        .close-btn:hover {
+            color: #666;
+            background: none;
+            transform: none;
+        }
+
+        .settings-group {
+            margin-bottom: 24px;
+        }
+
+        .settings-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .settings-input {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .settings-input:focus {
+            border-color: #667eea;
+        }
+
+        .settings-input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .settings-input-wrapper input {
+            flex: 1;
+        }
+
+        .settings-unit {
+            color: #888;
+            font-size: 14px;
+        }
+
+        .settings-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 32px;
+        }
+
+        .btn-save {
+            background: #667eea;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-save:hover {
+            background: #5a6fd6;
+        }
+
+        .btn-cancel {
+            background: #e0e0e0;
+            color: #666;
+            flex: 1;
+        }
+
+        .btn-cancel:hover {
+            background: #d0d0d0;
+        }
     </style>
 </head>
 <body class="work">
+    <button class="settings-btn" id="settingsBtn">设置</button>
+    
+    <div class="settings-modal" id="settingsModal">
+        <div class="settings-panel">
+            <div class="settings-header">
+                <h2 class="settings-title">设置</h2>
+                <button class="close-btn" id="closeSettingsBtn">&times;</button>
+            </div>
+            
+            <div class="settings-group">
+                <label class="settings-label">工作时长</label>
+                <div class="settings-input-wrapper">
+                    <input type="number" class="settings-input" id="workMinutes" min="1" max="120" value="25">
+                    <span class="settings-unit">分钟</span>
+                </div>
+            </div>
+            
+            <div class="settings-group">
+                <label class="settings-label">短休息时长</label>
+                <div class="settings-input-wrapper">
+                    <input type="number" class="settings-input" id="shortBreakMinutes" min="1" max="60" value="5">
+                    <span class="settings-unit">分钟</span>
+                </div>
+            </div>
+            
+            <div class="settings-group">
+                <label class="settings-label">长休息时长</label>
+                <div class="settings-input-wrapper">
+                    <input type="number" class="settings-input" id="longBreakMinutes" min="1" max="120" value="15">
+                    <span class="settings-unit">分钟</span>
+                </div>
+            </div>
+            
+            <div class="settings-group">
+                <label class="settings-label">多少个番茄后进长休息</label>
+                <div class="settings-input-wrapper">
+                    <input type="number" class="settings-input" id="pomodorosUntilLongBreak" min="1" max="10" value="4">
+                    <span class="settings-unit">个</span>
+                </div>
+            </div>
+            
+            <div class="settings-actions">
+                <button class="btn-cancel" id="cancelSettingsBtn">取消</button>
+                <button class="btn-save" id="saveSettingsBtn">保存</button>
+            </div>
+        </div>
+    </div>
+    
     <div class="container">
         <div class="stage-info">
             <div class="stage-name" id="stageName">工作时间</div>
@@ -160,10 +343,14 @@
     </div>
 
     <script>
-        const WORK_MINUTES = 25;
-        const SHORT_BREAK_MINUTES = 5;
-        const LONG_BREAK_MINUTES = 15;
-        const POMODOROS_UNTIL_LONG_BREAK = 4;
+        const DEFAULT_SETTINGS = {
+            workMinutes: 25,
+            shortBreakMinutes: 5,
+            longBreakMinutes: 15,
+            pomodorosUntilLongBreak: 4
+        };
+
+        let settings = { ...DEFAULT_SETTINGS };
 
         const Stage = {
             WORK: 'work',
@@ -177,15 +364,22 @@
             [Stage.LONG_BREAK]: '长休息'
         };
 
-        const StageDurations = {
-            [Stage.WORK]: WORK_MINUTES * 60,
-            [Stage.SHORT_BREAK]: SHORT_BREAK_MINUTES * 60,
-            [Stage.LONG_BREAK]: LONG_BREAK_MINUTES * 60
-        };
+        function getStageDuration(stage) {
+            switch (stage) {
+                case Stage.WORK:
+                    return settings.workMinutes * 60;
+                case Stage.SHORT_BREAK:
+                    return settings.shortBreakMinutes * 60;
+                case Stage.LONG_BREAK:
+                    return settings.longBreakMinutes * 60;
+                default:
+                    return settings.workMinutes * 60;
+            }
+        }
 
         let currentStage = Stage.WORK;
         let completedPomodoros = 0;
-        let timeRemaining = StageDurations[currentStage];
+        let timeRemaining = getStageDuration(currentStage);
         let startTime = null;
         let endTime = null;
         let animationFrameId = null;
@@ -197,6 +391,89 @@
         const pomodoroDots = document.getElementById('pomodoroDots');
         const startBtn = document.getElementById('startBtn');
         const resetBtn = document.getElementById('resetBtn');
+
+        const settingsBtn = document.getElementById('settingsBtn');
+        const settingsModal = document.getElementById('settingsModal');
+        const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+        const cancelSettingsBtn = document.getElementById('cancelSettingsBtn');
+        const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+
+        const workMinutesInput = document.getElementById('workMinutes');
+        const shortBreakMinutesInput = document.getElementById('shortBreakMinutes');
+        const longBreakMinutesInput = document.getElementById('longBreakMinutes');
+        const pomodorosUntilLongBreakInput = document.getElementById('pomodorosUntilLongBreak');
+
+        function loadSettings() {
+            const saved = localStorage.getItem('pomodoroSettings');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    settings = { ...DEFAULT_SETTINGS, ...parsed };
+                } catch (e) {
+                    settings = { ...DEFAULT_SETTINGS };
+                }
+            }
+        }
+
+        function saveSettingsToStorage() {
+            localStorage.setItem('pomodoroSettings', JSON.stringify(settings));
+        }
+
+        function populateSettingsForm() {
+            workMinutesInput.value = settings.workMinutes;
+            shortBreakMinutesInput.value = settings.shortBreakMinutes;
+            longBreakMinutesInput.value = settings.longBreakMinutes;
+            pomodorosUntilLongBreakInput.value = settings.pomodorosUntilLongBreak;
+        }
+
+        function updatePomodoroDots() {
+            const dotsContainer = pomodoroDots;
+            const currentDotCount = dotsContainer.children.length;
+            const targetCount = settings.pomodorosUntilLongBreak;
+
+            if (currentDotCount > targetCount) {
+                while (dotsContainer.children.length > targetCount) {
+                    dotsContainer.removeChild(dotsContainer.lastChild);
+                }
+            } else if (currentDotCount < targetCount) {
+                while (dotsContainer.children.length < targetCount) {
+                    const dot = document.createElement('div');
+                    dot.className = 'dot';
+                    dotsContainer.appendChild(dot);
+                }
+            }
+        }
+
+        function openSettingsModal() {
+            populateSettingsForm();
+            settingsModal.classList.add('show');
+        }
+
+        function closeSettingsModal() {
+            settingsModal.classList.remove('show');
+        }
+
+        function handleSaveSettings() {
+            const workMinutes = parseInt(workMinutesInput.value) || DEFAULT_SETTINGS.workMinutes;
+            const shortBreakMinutes = parseInt(shortBreakMinutesInput.value) || DEFAULT_SETTINGS.shortBreakMinutes;
+            const longBreakMinutes = parseInt(longBreakMinutesInput.value) || DEFAULT_SETTINGS.longBreakMinutes;
+            const pomodorosUntilLongBreak = parseInt(pomodorosUntilLongBreakInput.value) || DEFAULT_SETTINGS.pomodorosUntilLongBreak;
+
+            settings.workMinutes = Math.max(1, Math.min(120, workMinutes));
+            settings.shortBreakMinutes = Math.max(1, Math.min(60, shortBreakMinutes));
+            settings.longBreakMinutes = Math.max(1, Math.min(120, longBreakMinutes));
+            settings.pomodorosUntilLongBreak = Math.max(1, Math.min(10, pomodorosUntilLongBreak));
+
+            saveSettingsToStorage();
+            updatePomodoroDots();
+
+            if (!isRunning) {
+                timeRemaining = getStageDuration(currentStage);
+                updateDisplay();
+            }
+
+            closeSettingsModal();
+        }
 
         function formatTime(seconds) {
             const mins = Math.floor(seconds / 60);
@@ -212,7 +489,7 @@
             document.body.className = currentStage;
             
             const dots = pomodoroDots.querySelectorAll('.dot');
-            const currentCycle = completedPomodoros % POMODOROS_UNTIL_LONG_BREAK;
+            const currentCycle = completedPomodoros % settings.pomodorosUntilLongBreak;
             dots.forEach((dot, index) => {
                 dot.classList.toggle('completed', index < currentCycle);
             });
@@ -316,7 +593,7 @@
             if (currentStage === Stage.WORK) {
                 completedPomodoros++;
                 
-                if (completedPomodoros % POMODOROS_UNTIL_LONG_BREAK === 0) {
+                if (completedPomodoros % settings.pomodorosUntilLongBreak === 0) {
                     currentStage = Stage.LONG_BREAK;
                 } else {
                     currentStage = Stage.SHORT_BREAK;
@@ -325,14 +602,14 @@
                 currentStage = Stage.WORK;
             }
             
-            timeRemaining = StageDurations[currentStage];
+            timeRemaining = getStageDuration(currentStage);
             updateDisplay();
         }
 
         function resetTimer() {
             pauseTimer();
             currentStage = Stage.WORK;
-            timeRemaining = StageDurations[currentStage];
+            timeRemaining = getStageDuration(currentStage);
             updateDisplay();
         }
 
@@ -349,6 +626,26 @@
             }
         });
 
+        settingsBtn.addEventListener('click', openSettingsModal);
+        closeSettingsBtn.addEventListener('click', closeSettingsModal);
+        cancelSettingsBtn.addEventListener('click', closeSettingsModal);
+        saveSettingsBtn.addEventListener('click', handleSaveSettings);
+
+        settingsModal.addEventListener('click', (e) => {
+            if (e.target === settingsModal) {
+                closeSettingsModal();
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Escape' && settingsModal.classList.contains('show')) {
+                closeSettingsModal();
+            }
+        });
+
+        loadSettings();
+        updatePomodoroDots();
+        timeRemaining = getStageDuration(currentStage);
         updateDisplay();
     </script>
 </body>
