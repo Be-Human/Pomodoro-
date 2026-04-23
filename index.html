@@ -19,6 +19,7 @@
             justify-content: center;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             transition: background 0.5s ease;
+            padding: 20px;
         }
 
         body.work {
@@ -33,13 +34,182 @@
             background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
         }
 
+        .main-wrapper {
+            display: flex;
+            gap: 24px;
+            max-width: 1000px;
+            width: 100%;
+        }
+
         .container {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 24px;
             padding: 48px;
             text-align: center;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            flex: 1;
             min-width: 400px;
+        }
+
+        .task-panel {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 320px;
+            max-height: 600px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .panel-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .history-btn {
+            padding: 8px 16px;
+            background: #667eea;
+            color: white;
+            font-size: 13px;
+            border-radius: 20px;
+            min-width: auto;
+        }
+
+        .history-btn:hover {
+            background: #5a6fd6;
+            transform: translateY(-1px);
+        }
+
+        .add-task-form {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .task-input {
+            flex: 1;
+            padding: 12px 16px;
+            font-size: 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .task-input:focus {
+            border-color: #667eea;
+        }
+
+        .btn-add-task {
+            padding: 12px 20px;
+            background: #667eea;
+            color: white;
+            font-size: 14px;
+            border-radius: 12px;
+            min-width: auto;
+        }
+
+        .btn-add-task:hover {
+            background: #5a6fd6;
+        }
+
+        .task-list {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .task-item:hover {
+            background: #f0f0f0;
+            transform: translateY(-1px);
+        }
+
+        .task-item.active {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: #667eea;
+        }
+
+        .task-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .task-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .task-pomodoros {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 4px;
+        }
+
+        .task-pomodoro-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #667eea;
+        }
+
+        .task-pomodoro-count {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .btn-delete-task {
+            padding: 6px 10px;
+            background: transparent;
+            color: #999;
+            font-size: 12px;
+            min-width: auto;
+            border-radius: 8px;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .task-item:hover .btn-delete-task {
+            opacity: 1;
+        }
+
+        .btn-delete-task:hover {
+            background: rgba(255, 0, 0, 0.1);
+            color: #ff4444;
+        }
+
+        .empty-task-hint {
+            text-align: center;
+            color: #999;
+            font-size: 14px;
+            padding: 40px 20px;
         }
 
         .stage-info {
@@ -137,10 +307,15 @@
             transform: translateY(0);
         }
 
-        .settings-btn {
+        .top-buttons {
             position: absolute;
             top: 20px;
             right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .settings-btn {
             padding: 10px 20px;
             background: rgba(255, 255, 255, 0.2);
             color: white;
@@ -152,7 +327,7 @@
             background: rgba(255, 255, 255, 0.3);
         }
 
-        .settings-modal {
+        .modal {
             position: fixed;
             top: 0;
             left: 0;
@@ -165,26 +340,33 @@
             z-index: 1000;
         }
 
-        .settings-modal.show {
+        .modal.show {
             display: flex;
         }
 
-        .settings-panel {
+        .modal-panel {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 24px;
             padding: 40px;
-            width: 450px;
+            width: 500px;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
 
-        .settings-header {
+        .settings-panel {
+            width: 450px;
+        }
+
+        .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 32px;
+            margin-bottom: 24px;
         }
 
-        .settings-title {
+        .modal-title {
             font-size: 24px;
             font-weight: 600;
             color: #333;
@@ -271,15 +453,114 @@
         .btn-cancel:hover {
             background: #d0d0d0;
         }
+
+        .history-content {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .history-date-group {
+            margin-bottom: 24px;
+        }
+
+        .history-date {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .history-date-total {
+            font-size: 14px;
+            color: #888;
+            font-weight: normal;
+            margin-left: 8px;
+        }
+
+        .history-task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .history-task-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .history-task-name {
+            font-size: 14px;
+            color: #333;
+        }
+
+        .history-task-pomodoros {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .history-task-dots {
+            display: flex;
+            gap: 3px;
+        }
+
+        .history-task-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #667eea;
+        }
+
+        .history-task-count {
+            font-size: 13px;
+            color: #888;
+            min-width: 40px;
+            text-align: right;
+        }
+
+        .empty-history {
+            text-align: center;
+            color: #999;
+            font-size: 14px;
+            padding: 40px 20px;
+        }
+
+        @media (max-width: 900px) {
+            .main-wrapper {
+                flex-direction: column;
+            }
+
+            .task-panel {
+                width: 100%;
+                max-height: 400px;
+            }
+
+            .container {
+                min-width: auto;
+                padding: 32px;
+            }
+
+            .timer-display {
+                font-size: 72px;
+            }
+        }
     </style>
 </head>
 <body class="work">
-    <button class="settings-btn" id="settingsBtn">设置</button>
+    <div class="top-buttons">
+        <button class="settings-btn" id="settingsBtn">设置</button>
+    </div>
     
-    <div class="settings-modal" id="settingsModal">
-        <div class="settings-panel">
-            <div class="settings-header">
-                <h2 class="settings-title">设置</h2>
+    <div class="modal" id="settingsModal">
+        <div class="modal-panel settings-panel">
+            <div class="modal-header">
+                <h2 class="modal-title">设置</h2>
                 <button class="close-btn" id="closeSettingsBtn">&times;</button>
             </div>
             
@@ -321,24 +602,55 @@
             </div>
         </div>
     </div>
-    
-    <div class="container">
-        <div class="stage-info">
-            <div class="stage-name" id="stageName">工作时间</div>
-            <div class="pomodoro-count">已完成 <span id="completedCount">0</span> 个番茄</div>
-            <div class="pomodoro-dots" id="pomodoroDots">
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
+
+    <div class="modal" id="historyModal">
+        <div class="modal-panel">
+            <div class="modal-header">
+                <h2 class="modal-title">历史记录</h2>
+                <button class="close-btn" id="closeHistoryBtn">&times;</button>
+            </div>
+            
+            <div class="history-content" id="historyContent">
+                <div class="empty-history">暂无历史记录</div>
             </div>
         </div>
-        
-        <div class="timer-display" id="timerDisplay">25:00</div>
-        
-        <div class="controls">
-            <button class="btn-start" id="startBtn">开始</button>
-            <button class="btn-reset" id="resetBtn">重置</button>
+    </div>
+    
+    <div class="main-wrapper">
+        <div class="container">
+            <div class="stage-info">
+                <div class="stage-name" id="stageName">工作时间</div>
+                <div class="pomodoro-count">已完成 <span id="completedCount">0</span> 个番茄</div>
+                <div class="pomodoro-dots" id="pomodoroDots">
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                </div>
+            </div>
+            
+            <div class="timer-display" id="timerDisplay">25:00</div>
+            
+            <div class="controls">
+                <button class="btn-start" id="startBtn">开始</button>
+                <button class="btn-reset" id="resetBtn">重置</button>
+            </div>
+        </div>
+
+        <div class="task-panel">
+            <div class="panel-header">
+                <h3 class="panel-title">任务列表</h3>
+                <button class="history-btn" id="historyBtn">历史记录</button>
+            </div>
+
+            <div class="add-task-form">
+                <input type="text" class="task-input" id="taskInput" placeholder="输入任务名称..." maxlength="50">
+                <button class="btn-add-task" id="addTaskBtn">添加</button>
+            </div>
+
+            <div class="task-list" id="taskList">
+                <div class="empty-task-hint">点击上方添加任务<br>选择任务后开始计时</div>
+            </div>
         </div>
     </div>
 
@@ -351,6 +663,9 @@
         };
 
         let settings = { ...DEFAULT_SETTINGS };
+        let tasks = [];
+        let activeTaskId = null;
+        let history = {};
 
         const Stage = {
             WORK: 'work',
@@ -402,6 +717,277 @@
         const shortBreakMinutesInput = document.getElementById('shortBreakMinutes');
         const longBreakMinutesInput = document.getElementById('longBreakMinutes');
         const pomodorosUntilLongBreakInput = document.getElementById('pomodorosUntilLongBreak');
+
+        const taskInput = document.getElementById('taskInput');
+        const addTaskBtn = document.getElementById('addTaskBtn');
+        const taskList = document.getElementById('taskList');
+
+        const historyBtn = document.getElementById('historyBtn');
+        const historyModal = document.getElementById('historyModal');
+        const closeHistoryBtn = document.getElementById('closeHistoryBtn');
+        const historyContent = document.getElementById('historyContent');
+
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+
+        function getTodayDateString() {
+            const now = new Date();
+            return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+        }
+
+        function loadTasks() {
+            const saved = localStorage.getItem('pomodoroTasks');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    tasks = Array.isArray(parsed) ? parsed : [];
+                } catch (e) {
+                    tasks = [];
+                }
+            }
+        }
+
+        function saveTasksToStorage() {
+            localStorage.setItem('pomodoroTasks', JSON.stringify(tasks));
+        }
+
+        function loadActiveTask() {
+            const saved = localStorage.getItem('pomodoroActiveTask');
+            if (saved) {
+                try {
+                    activeTaskId = JSON.parse(saved);
+                } catch (e) {
+                    activeTaskId = null;
+                }
+            }
+        }
+
+        function saveActiveTaskToStorage() {
+            localStorage.setItem('pomodoroActiveTask', JSON.stringify(activeTaskId));
+        }
+
+        function loadHistory() {
+            const saved = localStorage.getItem('pomodoroHistory');
+            if (saved) {
+                try {
+                    history = JSON.parse(saved) || {};
+                } catch (e) {
+                    history = {};
+                }
+            }
+        }
+
+        function saveHistoryToStorage() {
+            localStorage.setItem('pomodoroHistory', JSON.stringify(history));
+        }
+
+        function addTask(name) {
+            const task = {
+                id: generateId(),
+                name: name.trim(),
+                completedPomodoros: 0,
+                createdAt: getTodayDateString()
+            };
+            tasks.push(task);
+            saveTasksToStorage();
+            renderTasks();
+            return task;
+        }
+
+        function deleteTask(id) {
+            const index = tasks.findIndex(t => t.id === id);
+            if (index !== -1) {
+                tasks.splice(index, 1);
+                if (activeTaskId === id) {
+                    activeTaskId = null;
+                    saveActiveTaskToStorage();
+                }
+                saveTasksToStorage();
+                renderTasks();
+            }
+        }
+
+        function setActiveTask(id) {
+            if (isRunning && currentStage === Stage.WORK) {
+                return;
+            }
+            activeTaskId = id;
+            saveActiveTaskToStorage();
+            renderTasks();
+        }
+
+        function addPomodoroToTask(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (task) {
+                task.completedPomodoros++;
+                saveTasksToStorage();
+                renderTasks();
+
+                const today = getTodayDateString();
+                if (!history[today]) {
+                    history[today] = [];
+                }
+                history[today].push({
+                    taskId: task.id,
+                    taskName: task.name,
+                    completedAt: new Date().toISOString()
+                });
+                saveHistoryToStorage();
+            }
+        }
+
+        function renderTasks() {
+            if (tasks.length === 0) {
+                taskList.innerHTML = '<div class="empty-task-hint">点击上方添加任务<br>选择任务后开始计时</div>';
+                return;
+            }
+
+            let html = '';
+            tasks.forEach(task => {
+                const isActive = task.id === activeTaskId;
+                html += `
+                    <div class="task-item ${isActive ? 'active' : ''}" data-task-id="${task.id}">
+                        <div class="task-info">
+                            <div class="task-name">${escapeHtml(task.name)}</div>
+                            <div class="task-pomodoros">
+                                ${task.completedPomodoros > 0 ? renderPomodoroDots(task.completedPomodoros) : ''}
+                                <span class="task-pomodoro-count">${task.completedPomodoros} 个番茄</span>
+                            </div>
+                        </div>
+                        <button class="btn-delete-task" data-task-id="${task.id}">删除</button>
+                    </div>
+                `;
+            });
+            taskList.innerHTML = html;
+
+            taskList.querySelectorAll('.task-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('btn-delete-task')) {
+                        return;
+                    }
+                    const taskId = item.dataset.taskId;
+                    setActiveTask(taskId);
+                });
+            });
+
+            taskList.querySelectorAll('.btn-delete-task').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const taskId = btn.dataset.taskId;
+                    deleteTask(taskId);
+                });
+            });
+        }
+
+        function renderPomodoroDots(count) {
+            let dots = '';
+            const maxDots = Math.min(count, 5);
+            for (let i = 0; i < maxDots; i++) {
+                dots += '<span class="task-pomodoro-dot"></span>';
+            }
+            return `<div class="task-pomodoro-dots">${dots}</div>`;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function renderHistory() {
+            const dates = Object.keys(history).sort().reverse();
+            
+            if (dates.length === 0) {
+                historyContent.innerHTML = '<div class="empty-history">暂无历史记录</div>';
+                return;
+            }
+
+            let html = '';
+            dates.forEach(date => {
+                const records = history[date];
+                const taskStats = {};
+                
+                records.forEach(record => {
+                    if (!taskStats[record.taskName]) {
+                        taskStats[record.taskName] = 0;
+                    }
+                    taskStats[record.taskName]++;
+                });
+
+                const totalPomodoros = records.length;
+                const taskNames = Object.keys(taskStats);
+
+                html += `
+                    <div class="history-date-group">
+                        <div class="history-date">
+                            ${formatDate(date)}
+                            <span class="history-date-total">共 ${totalPomodoros} 个番茄</span>
+                        </div>
+                        <div class="history-task-list">
+                `;
+
+                taskNames.forEach(taskName => {
+                    const count = taskStats[taskName];
+                    html += `
+                        <div class="history-task-item">
+                            <span class="history-task-name">${escapeHtml(taskName)}</span>
+                            <div class="history-task-pomodoros">
+                                <div class="history-task-dots">
+                                    ${renderHistoryPomodoroDots(count)}
+                                </div>
+                                <span class="history-task-count">${count} 个</span>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += `
+                        </div>
+                    </div>
+                `;
+            });
+
+            historyContent.innerHTML = html;
+        }
+
+        function renderHistoryPomodoroDots(count) {
+            let dots = '';
+            const maxDots = Math.min(count, 10);
+            for (let i = 0; i < maxDots; i++) {
+                dots += '<span class="history-task-dot"></span>';
+            }
+            return dots;
+        }
+
+        function formatDate(dateStr) {
+            const parts = dateStr.split('-');
+            const year = parseInt(parts[0]);
+            const month = parseInt(parts[1]);
+            const day = parseInt(parts[2]);
+            
+            const today = new Date();
+            const date = new Date(year, month - 1, day);
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+
+            if (date.toDateString() === today.toDateString()) {
+                return '今天';
+            } else if (date.toDateString() === yesterday.toDateString()) {
+                return '昨天';
+            } else {
+                return `${year}年${month}月${day}日`;
+            }
+        }
+
+        function openHistoryModal() {
+            renderHistory();
+            historyModal.classList.add('show');
+        }
+
+        function closeHistoryModal() {
+            historyModal.classList.remove('show');
+        }
 
         function loadSettings() {
             const saved = localStorage.getItem('pomodoroSettings');
@@ -593,6 +1179,10 @@
             if (currentStage === Stage.WORK) {
                 completedPomodoros++;
                 
+                if (activeTaskId) {
+                    addPomodoroToTask(activeTaskId);
+                }
+                
                 if (completedPomodoros % settings.pomodorosUntilLongBreak === 0) {
                     currentStage = Stage.LONG_BREAK;
                 } else {
@@ -641,12 +1231,47 @@
             if (e.code === 'Escape' && settingsModal.classList.contains('show')) {
                 closeSettingsModal();
             }
+            if (e.code === 'Escape' && historyModal.classList.contains('show')) {
+                closeHistoryModal();
+            }
+        });
+
+        addTaskBtn.addEventListener('click', () => {
+            const name = taskInput.value.trim();
+            if (name) {
+                addTask(name);
+                taskInput.value = '';
+                taskInput.focus();
+            }
+        });
+
+        taskInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const name = taskInput.value.trim();
+                if (name) {
+                    addTask(name);
+                    taskInput.value = '';
+                }
+            }
+        });
+
+        historyBtn.addEventListener('click', openHistoryModal);
+        closeHistoryBtn.addEventListener('click', closeHistoryModal);
+
+        historyModal.addEventListener('click', (e) => {
+            if (e.target === historyModal) {
+                closeHistoryModal();
+            }
         });
 
         loadSettings();
+        loadTasks();
+        loadActiveTask();
+        loadHistory();
         updatePomodoroDots();
         timeRemaining = getStageDuration(currentStage);
         updateDisplay();
+        renderTasks();
     </script>
 </body>
 </html>
