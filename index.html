@@ -812,7 +812,11 @@
             if (isRunning && currentStage === Stage.WORK) {
                 return;
             }
-            activeTaskId = id;
+            if (activeTaskId === id) {
+                activeTaskId = null;
+            } else {
+                activeTaskId = id;
+            }
             saveActiveTaskToStorage();
             renderTasks();
         }
@@ -1207,6 +1211,10 @@
         resetBtn.addEventListener('click', resetTimer);
 
         document.addEventListener('keydown', (e) => {
+            const isInputFocused = e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable;
+            if (isInputFocused) {
+                return;
+            }
             if (e.code === 'Space') {
                 e.preventDefault();
                 toggleTimer();
