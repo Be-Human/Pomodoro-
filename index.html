@@ -254,6 +254,133 @@
             color: #888;
         }
 
+        .task-progress {
+            margin-top: 6px;
+        }
+
+        .task-progress-bar {
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 4px;
+        }
+
+        .task-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .task-progress-text {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .task-completed-count {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .task-estimated-count {
+            font-weight: 500;
+            color: #666;
+        }
+
+        .task-progress-separator,
+        .task-progress-unit {
+            color: #aaa;
+        }
+
+        .task-edit-form {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .task-edit-input {
+            padding: 8px 12px;
+            font-size: 14px;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            outline: none;
+            background: white;
+            width: 100%;
+        }
+
+        .task-edit-input:focus {
+            border-color: #5a6fd6;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .task-edit-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .task-edit-label {
+            font-size: 12px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .task-edit-number {
+            width: 60px;
+            padding: 6px 8px;
+            font-size: 13px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            outline: none;
+        }
+
+        .task-edit-number:focus {
+            border-color: #667eea;
+        }
+
+        .task-edit-unit {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .task-edit-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .task-edit-save,
+        .task-edit-cancel {
+            padding: 6px 16px;
+            font-size: 13px;
+            border-radius: 8px;
+            min-width: auto;
+            font-weight: 500;
+        }
+
+        .task-edit-save {
+            background: #667eea;
+            color: white;
+        }
+
+        .task-edit-save:hover {
+            background: #5a6fd6;
+        }
+
+        .task-edit-cancel {
+            background: #e0e0e0;
+            color: #666;
+        }
+
+        .task-edit-cancel:hover {
+            background: #d0d0d0;
+        }
+
+        .task-item.editing {
+            background: rgba(102, 126, 234, 0.05);
+            border-color: #667eea;
+        }
+
         .btn-delete-task {
             padding: 6px 10px;
             background: transparent;
@@ -965,6 +1092,7 @@
                 id: generateId(),
                 name: name.trim(),
                 completedPomodoros: 0,
+                estimatedPomodoros: 1,
                 isCompleted: false,
                 createdAt: getTodayDateString()
             };
@@ -1040,14 +1168,67 @@
             COMPLETED: 'completed'
         };
 
+        let currentFilter = TaskFilter.ALL;
+        let editingTaskId = null;
+
+        function loadFilter() {
+            const saved = localStorage.getItem('pomodoroFilter');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    if ([TaskFilter.ALL, TaskFilter.ACTIVE, TaskFilter.COMPLETED].includes(parsed)) {
+                        currentFilter = parsed;
+                    }
+                } catch (e) {
+                    currentFilter = TaskFilter.ALL;
+                }
+            }
+        }
+
+        function saveFilterToStorage() {
+            localStorage.setItem('pomodoroFilter', JSON.stringify(currentFilter));
+        }
+
         function setActiveFilter(filter) {
             currentFilter = filter;
+            saveFilterToStorage();
             
             filterTabs.querySelectorAll('.filter-tab').forEach(tab => {
                 const tabFilter = tab.dataset.filter;
                 tab.classList.toggle('active', tabFilter === currentFilter);
             });
             
+            renderTasks();
+        }
+
+        function updateTask(taskId, updates) {
+            const task = tasks.find(t => t.id === taskId);
+            if (task) {
+                Object.assign(task, updates);
+                saveTasksToStorage();
+                renderTasks();
+            }
+        }
+
+        function startEditingTask(taskId) {
+            editingTaskId = taskId;
+            renderTasks();
+        }
+
+        function finishEditingTask(taskId, newName, newEstimated) {
+            if (newName && newName.trim()) {
+                const updates = { name: newName.trim() };
+                if (newEstimated !== undefined && newEstimated !== null && !isNaN(newEstimated)) {
+                    updates.estimatedPomodoros = Math.max(1, parseInt(newEstimated));
+                }
+                updateTask(taskId, updates);
+            }
+            editingTaskId = null;
+            renderTasks();
+        }
+
+        function cancelEditing() {
+            editingTaskId = null;
             renderTasks();
         }
 
@@ -1064,6 +1245,11 @@
         }
 
         function renderTasks() {
+            filterTabs.querySelectorAll('.filter-tab').forEach(tab => {
+                const tabFilter = tab.dataset.filter;
+                tab.classList.toggle('active', tabFilter === currentFilter);
+            });
+
             let filteredTasks;
             switch (currentFilter) {
                 case TaskFilter.ACTIVE:
@@ -1100,21 +1286,56 @@
             filteredTasks.forEach(task => {
                 const isActive = task.id === activeTaskId;
                 const isCurrentlyRunning = isActive && isRunning && currentStage === Stage.WORK;
-                html += `
-                    <div class="task-item ${isActive ? 'active' : ''} ${task.isCompleted ? 'completed' : ''}" data-task-id="${task.id}">
-                        <div class="task-checkbox" data-task-id="${task.id}">
-                            ${task.isCompleted ? '✓' : ''}
-                        </div>
-                        <div class="task-info">
-                            <div class="task-name">${escapeHtml(task.name)}</div>
-                            <div class="task-pomodoros">
-                                ${task.completedPomodoros > 0 ? renderPomodoroDots(task.completedPomodoros) : ''}
-                                <span class="task-pomodoro-count">${task.completedPomodoros} 个番茄</span>
+                const isEditing = task.id === editingTaskId;
+                const estimatedPomodoros = task.estimatedPomodoros || 1;
+                const progressPercent = Math.min(100, (task.completedPomodoros / estimatedPomodoros) * 100);
+                
+                if (isEditing) {
+                    html += `
+                        <div class="task-item editing ${isActive ? 'active' : ''} ${task.isCompleted ? 'completed' : ''}" data-task-id="${task.id}">
+                            <div class="task-checkbox" data-task-id="${task.id}">
+                                ${task.isCompleted ? '✓' : ''}
+                            </div>
+                            <div class="task-info">
+                                <div class="task-edit-form">
+                                    <input type="text" class="task-edit-input" id="editName-${task.id}" value="${escapeHtml(task.name)}" maxlength="50">
+                                    <div class="task-edit-row">
+                                        <label class="task-edit-label">预计番茄：</label>
+                                        <input type="number" class="task-edit-number" id="editEstimated-${task.id}" value="${estimatedPomodoros}" min="1" max="100">
+                                        <span class="task-edit-unit">个</span>
+                                    </div>
+                                    <div class="task-edit-actions">
+                                        <button class="task-edit-save" data-task-id="${task.id}">保存</button>
+                                        <button class="task-edit-cancel" data-task-id="${task.id}">取消</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <button class="btn-delete-task" data-task-id="${task.id}" ${isCurrentlyRunning ? 'disabled' : ''}>删除</button>
-                    </div>
-                `;
+                    `;
+                } else {
+                    html += `
+                        <div class="task-item ${isActive ? 'active' : ''} ${task.isCompleted ? 'completed' : ''}" data-task-id="${task.id}">
+                            <div class="task-checkbox" data-task-id="${task.id}">
+                                ${task.isCompleted ? '✓' : ''}
+                            </div>
+                            <div class="task-info">
+                                <div class="task-name" data-task-id="${task.id}">${escapeHtml(task.name)}</div>
+                                <div class="task-progress">
+                                    <div class="task-progress-bar">
+                                        <div class="task-progress-fill" style="width: ${progressPercent}%"></div>
+                                    </div>
+                                    <div class="task-progress-text">
+                                        <span class="task-completed-count">${task.completedPomodoros}</span>
+                                        <span class="task-progress-separator">/</span>
+                                        <span class="task-estimated-count">${estimatedPomodoros}</span>
+                                        <span class="task-progress-unit">个番茄</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn-delete-task" data-task-id="${task.id}" ${isCurrentlyRunning ? 'disabled' : ''}>删除</button>
+                        </div>
+                    `;
+                }
             });
             taskList.innerHTML = html;
 
@@ -1126,10 +1347,23 @@
                 });
             });
 
+            taskList.querySelectorAll('.task-name').forEach(taskName => {
+                taskName.addEventListener('dblclick', (e) => {
+                    e.stopPropagation();
+                    const taskId = taskName.dataset.taskId;
+                    startEditingTask(taskId);
+                });
+            });
+
             taskList.querySelectorAll('.task-item').forEach(item => {
                 item.addEventListener('click', (e) => {
                     if (e.target.classList.contains('btn-delete-task') || 
-                        e.target.classList.contains('task-checkbox')) {
+                        e.target.classList.contains('task-checkbox') ||
+                        e.target.classList.contains('task-edit-save') ||
+                        e.target.classList.contains('task-edit-cancel') ||
+                        e.target.classList.contains('task-edit-input') ||
+                        e.target.classList.contains('task-edit-number') ||
+                        e.target.closest('.task-edit-form')) {
                         return;
                     }
                     const taskId = item.dataset.taskId;
@@ -1145,6 +1379,59 @@
                     }
                     const taskId = btn.dataset.taskId;
                     deleteTask(taskId);
+                });
+            });
+
+            taskList.querySelectorAll('.task-edit-save').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const taskId = btn.dataset.taskId;
+                    const nameInput = document.getElementById(`editName-${taskId}`);
+                    const estimatedInput = document.getElementById(`editEstimated-${taskId}`);
+                    finishEditingTask(taskId, nameInput.value, estimatedInput.value);
+                });
+            });
+
+            taskList.querySelectorAll('.task-edit-cancel').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    cancelEditing();
+                });
+            });
+
+            taskList.querySelectorAll('.task-edit-input').forEach(input => {
+                input.addEventListener('keydown', (e) => {
+                    const taskId = input.id.replace('editName-', '');
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const estimatedInput = document.getElementById(`editEstimated-${taskId}`);
+                        finishEditingTask(taskId, input.value, estimatedInput.value);
+                    } else if (e.key === 'Escape') {
+                        e.preventDefault();
+                        cancelEditing();
+                    }
+                });
+                input.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                });
+                input.focus();
+                input.select();
+            });
+
+            taskList.querySelectorAll('.task-edit-number').forEach(input => {
+                input.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                });
+                input.addEventListener('keydown', (e) => {
+                    const taskId = input.id.replace('editEstimated-', '');
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const nameInput = document.getElementById(`editName-${taskId}`);
+                        finishEditingTask(taskId, nameInput.value, input.value);
+                    } else if (e.key === 'Escape') {
+                        e.preventDefault();
+                        cancelEditing();
+                    }
                 });
             });
         }
@@ -1553,6 +1840,7 @@
         loadTasks();
         loadActiveTask();
         loadHistory();
+        loadFilter();
         updatePomodoroDots();
         timeRemaining = getStageDuration(currentStage);
         updateDisplay();
