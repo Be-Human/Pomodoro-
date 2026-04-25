@@ -147,6 +147,7 @@
             font-size: 14px;
             border-radius: 12px;
             min-width: auto;
+            white-space: nowrap;
         }
 
         .btn-add-task:hover {
@@ -381,6 +382,22 @@
             border-color: #667eea;
         }
 
+        .task-item.dragging {
+            opacity: 0.5;
+            transform: scale(1.02);
+        }
+
+        .task-item.drag-over {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 4px;
+        }
+
+        .btn-edit-task,
         .btn-delete-task {
             padding: 6px 10px;
             background: transparent;
@@ -392,8 +409,14 @@
             transition: all 0.3s ease;
         }
 
+        .task-item:hover .btn-edit-task,
         .task-item:hover .btn-delete-task {
             opacity: 1;
+        }
+
+        .btn-edit-task:hover {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
         }
 
         .btn-delete-task:hover {
@@ -764,6 +787,205 @@
             padding: 40px 20px;
         }
 
+        /* 深色模式样式 */
+        body.dark {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+
+        body.dark.work {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+
+        body.dark.short-break {
+            background: linear-gradient(135deg, #2d1b3d 0%, #3d1b4d 100%);
+        }
+
+        body.dark.long-break {
+            background: linear-gradient(135deg, #1b2d3d 0%, #1b3d4d 100%);
+        }
+
+        body.dark .container,
+        body.dark .task-panel {
+            background: rgba(30, 30, 50, 0.95);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        body.dark .modal-panel {
+            background: rgba(30, 30, 50, 0.95);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        body.dark .stage-name,
+        body.dark .pomodoro-count,
+        body.dark .panel-title,
+        body.dark .modal-title,
+        body.dark .settings-label,
+        body.dark .history-date,
+        body.dark .history-task-name,
+        body.dark .task-name {
+            color: #e0e0e0;
+        }
+
+        body.dark .timer-display {
+            color: #f0f0f0;
+        }
+
+        body.dark .task-input,
+        body.dark .settings-input,
+        body.dark .task-edit-input,
+        body.dark .task-edit-number {
+            background: rgba(50, 50, 70, 0.8);
+            border-color: #444;
+            color: #e0e0e0;
+        }
+
+        body.dark .task-input:focus,
+        body.dark .settings-input:focus,
+        body.dark .task-edit-input:focus,
+        body.dark .task-edit-number:focus {
+            border-color: #667eea;
+            background: rgba(50, 50, 70, 0.9);
+        }
+
+        body.dark .filter-tabs {
+            background: rgba(40, 40, 60, 0.8);
+        }
+
+        body.dark .filter-tab {
+            color: #888;
+        }
+
+        body.dark .filter-tab:hover {
+            color: #aaa;
+        }
+
+        body.dark .filter-tab.active {
+            background: rgba(60, 60, 80, 0.8);
+            color: #667eea;
+        }
+
+        body.dark .task-item {
+            background: rgba(40, 40, 60, 0.8);
+        }
+
+        body.dark .task-item:hover {
+            background: rgba(50, 50, 70, 0.8);
+        }
+
+        body.dark .task-item.active {
+            background: rgba(102, 126, 234, 0.15);
+            border-color: #667eea;
+        }
+
+        body.dark .task-item.editing {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: #667eea;
+        }
+
+        body.dark .task-item.drag-over {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.15);
+        }
+
+        body.dark .task-pomodoro-count,
+        body.dark .task-progress-text,
+        body.dark .task-edit-label,
+        body.dark .task-edit-unit,
+        body.dark .settings-unit,
+        body.dark .history-task-count,
+        body.dark .history-date-total,
+        body.dark .empty-task-hint,
+        body.dark .empty-history,
+        body.dark .current-task-label {
+            color: #888;
+        }
+
+        body.dark .task-progress-bar {
+            background: #333;
+        }
+
+        body.dark .task-checkbox {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        body.dark .task-checkbox:hover {
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        body.dark .task-item.completed .task-checkbox {
+            background: #667eea;
+            color: #fff;
+        }
+
+        body.dark .current-task {
+            background: rgba(102, 126, 234, 0.15);
+        }
+
+        body.dark .current-task-name {
+            color: #a5b4fc;
+        }
+
+        body.dark .history-task-item {
+            background: rgba(40, 40, 60, 0.8);
+        }
+
+        body.dark .btn-reset {
+            background: #333;
+            color: #aaa;
+        }
+
+        body.dark .btn-reset:hover {
+            background: #444;
+        }
+
+        body.dark .task-edit-save {
+            background: #667eea;
+            color: white;
+        }
+
+        body.dark .task-edit-save:hover {
+            background: #5a6fd6;
+        }
+
+        body.dark .task-edit-cancel {
+            background: #333;
+            color: #aaa;
+        }
+
+        body.dark .task-edit-cancel:hover {
+            background: #444;
+        }
+
+        body.dark .btn-save {
+            background: #667eea;
+            color: white;
+        }
+
+        body.dark .btn-save:hover {
+            background: #5a6fd6;
+        }
+
+        body.dark .btn-cancel {
+            background: #333;
+            color: #aaa;
+        }
+
+        body.dark .btn-cancel:hover {
+            background: #444;
+        }
+
+        body.dark .settings-btn,
+        body.dark .history-btn {
+            background: rgba(102, 126, 234, 0.3);
+            color: #a5b4fc;
+        }
+
+        body.dark .settings-btn:hover,
+        body.dark .history-btn:hover {
+            background: rgba(102, 126, 234, 0.4);
+        }
+
         @media (max-width: 900px) {
             body {
                 flex-direction: column;
@@ -840,11 +1062,17 @@
                 white-space: nowrap;
                 flex-shrink: 0;
             }
+
+            body.dark .settings-btn {
+                background: rgba(102, 126, 234, 0.4);
+                border-color: rgba(102, 126, 234, 0.3);
+            }
         }
     </style>
 </head>
 <body class="work">
     <div class="top-buttons">
+        <button class="settings-btn" id="themeBtn">🌙</button>
         <button class="settings-btn" id="settingsBtn">设置</button>
     </div>
     
@@ -1031,6 +1259,9 @@
         const currentTaskDiv = document.getElementById('currentTask');
         const currentTaskName = document.getElementById('currentTaskName');
         const filterTabs = document.getElementById('filterTabs');
+        const themeBtn = document.getElementById('themeBtn');
+
+        let isDarkMode = false;
 
         function generateId() {
             return Date.now().toString(36) + Math.random().toString(36).substr(2);
@@ -1085,6 +1316,38 @@
 
         function saveHistoryToStorage() {
             localStorage.setItem('pomodoroHistory', JSON.stringify(history));
+        }
+
+        function loadTheme() {
+            const saved = localStorage.getItem('pomodoroTheme');
+            if (saved) {
+                try {
+                    isDarkMode = JSON.parse(saved);
+                } catch (e) {
+                    isDarkMode = false;
+                }
+            }
+            applyTheme();
+        }
+
+        function saveThemeToStorage() {
+            localStorage.setItem('pomodoroTheme', JSON.stringify(isDarkMode));
+        }
+
+        function applyTheme() {
+            if (isDarkMode) {
+                document.body.classList.add('dark');
+                themeBtn.textContent = '☀️';
+            } else {
+                document.body.classList.remove('dark');
+                themeBtn.textContent = '🌙';
+            }
+        }
+
+        function toggleTheme() {
+            isDarkMode = !isDarkMode;
+            applyTheme();
+            saveThemeToStorage();
         }
 
         function addTask(name) {
@@ -1171,6 +1434,7 @@
         let currentFilter = TaskFilter.ALL;
         let editingTaskId = null;
         let clickTimer = null;
+        let draggedTaskId = null;
 
         function loadFilter() {
             const saved = localStorage.getItem('pomodoroFilter');
@@ -1315,7 +1579,7 @@
                     `;
                 } else {
                     html += `
-                        <div class="task-item ${isActive ? 'active' : ''} ${task.isCompleted ? 'completed' : ''}" data-task-id="${task.id}">
+                        <div class="task-item ${isActive ? 'active' : ''} ${task.isCompleted ? 'completed' : ''}" data-task-id="${task.id}" draggable="true">
                             <div class="task-checkbox" data-task-id="${task.id}">
                                 ${task.isCompleted ? '✓' : ''}
                             </div>
@@ -1333,7 +1597,10 @@
                                     </div>
                                 </div>
                             </div>
-                            <button class="btn-delete-task" data-task-id="${task.id}" ${isCurrentlyRunning ? 'disabled' : ''}>删除</button>
+                            <div class="task-actions">
+                                <button class="btn-edit-task" data-task-id="${task.id}">编辑</button>
+                                <button class="btn-delete-task" data-task-id="${task.id}" ${isCurrentlyRunning ? 'disabled' : ''}>删除</button>
+                            </div>
                         </div>
                     `;
                 }
@@ -1348,21 +1615,12 @@
                 });
             });
 
-            taskList.querySelectorAll('.task-name').forEach(taskName => {
-                taskName.addEventListener('dblclick', (e) => {
-                    e.stopPropagation();
-                    if (clickTimer) {
-                        clearTimeout(clickTimer);
-                        clickTimer = null;
-                    }
-                    const taskId = taskName.dataset.taskId;
-                    startEditingTask(taskId);
-                });
-            });
-
             taskList.querySelectorAll('.task-item').forEach(item => {
+                const taskId = item.dataset.taskId;
+                
                 item.addEventListener('click', (e) => {
                     if (e.target.classList.contains('btn-delete-task') || 
+                        e.target.classList.contains('btn-edit-task') ||
                         e.target.classList.contains('task-checkbox') ||
                         e.target.classList.contains('task-edit-save') ||
                         e.target.classList.contains('task-edit-cancel') ||
@@ -1371,15 +1629,31 @@
                         e.target.closest('.task-edit-form')) {
                         return;
                     }
-                    if (clickTimer) {
-                        clearTimeout(clickTimer);
-                        clickTimer = null;
-                    }
-                    const taskId = item.dataset.taskId;
-                    clickTimer = setTimeout(() => {
-                        setActiveTask(taskId);
-                        clickTimer = null;
-                    }, 250);
+                    setActiveTask(taskId);
+                });
+                
+                item.addEventListener('dragstart', (e) => {
+                    handleDragStart(e, taskId);
+                });
+                
+                item.addEventListener('dragend', (e) => {
+                    handleDragEnd(e);
+                });
+                
+                item.addEventListener('dragover', (e) => {
+                    handleDragOver(e);
+                });
+                
+                item.addEventListener('dragenter', (e) => {
+                    handleDragEnter(e);
+                });
+                
+                item.addEventListener('dragleave', (e) => {
+                    handleDragLeave(e);
+                });
+                
+                item.addEventListener('drop', (e) => {
+                    handleDrop(e, taskId);
                 });
             });
 
@@ -1391,6 +1665,14 @@
                     }
                     const taskId = btn.dataset.taskId;
                     deleteTask(taskId);
+                });
+            });
+
+            taskList.querySelectorAll('.btn-edit-task').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const taskId = btn.dataset.taskId;
+                    startEditingTask(taskId);
                 });
             });
 
@@ -1461,6 +1743,61 @@
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
+        }
+
+        function handleDragStart(e, taskId) {
+            draggedTaskId = taskId;
+            e.target.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', taskId);
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+            draggedTaskId = null;
+            document.querySelectorAll('.task-item').forEach(item => {
+                item.classList.remove('drag-over');
+            });
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+        }
+
+        function handleDragEnter(e) {
+            e.preventDefault();
+            const target = e.target.closest('.task-item');
+            if (target && !target.classList.contains('dragging')) {
+                target.classList.add('drag-over');
+            }
+        }
+
+        function handleDragLeave(e) {
+            const target = e.target.closest('.task-item');
+            if (target) {
+                target.classList.remove('drag-over');
+            }
+        }
+
+        function handleDrop(e, targetTaskId) {
+            e.preventDefault();
+            const target = e.target.closest('.task-item');
+            if (target) {
+                target.classList.remove('drag-over');
+            }
+            
+            if (draggedTaskId && draggedTaskId !== targetTaskId) {
+                const draggedIndex = tasks.findIndex(t => t.id === draggedTaskId);
+                const targetIndex = tasks.findIndex(t => t.id === targetTaskId);
+                
+                if (draggedIndex !== -1 && targetIndex !== -1) {
+                    const [draggedTask] = tasks.splice(draggedIndex, 1);
+                    tasks.splice(targetIndex, 0, draggedTask);
+                    saveTasksToStorage();
+                    renderTasks();
+                }
+            }
         }
 
         function renderHistory() {
@@ -1682,6 +2019,28 @@
             }, 400);
         }
 
+        function requestNotificationPermission() {
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+        }
+
+        function sendNotification(title, body) {
+            if ('Notification' in window && Notification.permission === 'granted') {
+                const notification = new Notification(title, {
+                    body: body,
+                    icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="%23667eea"/><text x="50" y="65" font-size="40" text-anchor="middle" fill="white">🍅</text></svg>'
+                });
+                
+                notification.onclick = () => {
+                    window.focus();
+                    notification.close();
+                };
+                
+                setTimeout(() => notification.close(), 5000);
+            }
+        }
+
         function toggleTimer() {
             if (isRunning) {
                 pauseTimer();
@@ -1692,6 +2051,8 @@
 
         function startTimer() {
             if (isRunning) return;
+            
+            requestNotificationPermission();
             
             isRunning = true;
             startBtn.textContent = '暂停';
@@ -1746,6 +2107,9 @@
             pauseTimer();
             playNotificationSound();
             
+            let notificationTitle = '';
+            let notificationBody = '';
+            
             if (currentStage === Stage.WORK) {
                 completedPomodoros++;
                 
@@ -1755,12 +2119,20 @@
                 
                 if (completedPomodoros % settings.pomodorosUntilLongBreak === 0) {
                     currentStage = Stage.LONG_BREAK;
+                    notificationTitle = '工作时间结束！';
+                    notificationBody = '休息一下吧，现在开始长休息时间。';
                 } else {
                     currentStage = Stage.SHORT_BREAK;
+                    notificationTitle = '工作时间结束！';
+                    notificationBody = '休息一下吧，现在开始短休息时间。';
                 }
             } else {
                 currentStage = Stage.WORK;
+                notificationTitle = '休息时间结束！';
+                notificationBody = '准备好开始下一个番茄钟了吗？';
             }
+            
+            sendNotification(notificationTitle, notificationBody);
             
             timeRemaining = getStageDuration(currentStage);
             updateDisplay();
@@ -1848,11 +2220,14 @@
             });
         });
 
+        themeBtn.addEventListener('click', toggleTheme);
+
         loadSettings();
         loadTasks();
         loadActiveTask();
         loadHistory();
         loadFilter();
+        loadTheme();
         updatePomodoroDots();
         timeRemaining = getStageDuration(currentStage);
         updateDisplay();
