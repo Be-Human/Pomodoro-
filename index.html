@@ -1977,7 +1977,8 @@
             stageName.textContent = StageNames[currentStage];
             completedCount.textContent = completedPomodoros;
             
-            document.body.className = currentStage;
+            document.body.classList.remove(Stage.WORK, Stage.SHORT_BREAK, Stage.LONG_BREAK);
+            document.body.classList.add(currentStage);
             
             document.title = `[${formatTime(timeRemaining)}] ${StageNames[currentStage]} - 番茄钟`;
             
