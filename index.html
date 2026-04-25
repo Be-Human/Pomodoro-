@@ -1170,6 +1170,7 @@
 
         let currentFilter = TaskFilter.ALL;
         let editingTaskId = null;
+        let clickTimer = null;
 
         function loadFilter() {
             const saved = localStorage.getItem('pomodoroFilter');
@@ -1350,6 +1351,10 @@
             taskList.querySelectorAll('.task-name').forEach(taskName => {
                 taskName.addEventListener('dblclick', (e) => {
                     e.stopPropagation();
+                    if (clickTimer) {
+                        clearTimeout(clickTimer);
+                        clickTimer = null;
+                    }
                     const taskId = taskName.dataset.taskId;
                     startEditingTask(taskId);
                 });
@@ -1366,8 +1371,15 @@
                         e.target.closest('.task-edit-form')) {
                         return;
                     }
+                    if (clickTimer) {
+                        clearTimeout(clickTimer);
+                        clickTimer = null;
+                    }
                     const taskId = item.dataset.taskId;
-                    setActiveTask(taskId);
+                    clickTimer = setTimeout(() => {
+                        setActiveTask(taskId);
+                        clickTimer = null;
+                    }, 250);
                 });
             });
 
