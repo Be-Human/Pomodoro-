@@ -66,33 +66,22 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            gap: 12px;
+            margin-bottom: 16px;
         }
 
         .panel-title {
             font-size: 20px;
             font-weight: 600;
             color: #333;
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-
-        .panel-buttons {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            justify-content: flex-end;
         }
 
         .history-btn {
-            padding: 8px 16px;
+            padding: 6px 14px;
             background: #667eea;
             color: white;
             font-size: 13px;
-            border-radius: 20px;
+            border-radius: 16px;
             min-width: auto;
-            flex-shrink: 0;
         }
 
         .history-btn:hover {
@@ -100,19 +89,35 @@
             transform: translateY(-1px);
         }
 
-        .filter-btn {
-            padding: 6px 12px;
-            background: rgba(102, 126, 234, 0.1);
-            color: #667eea;
-            font-size: 12px;
-            border-radius: 16px;
-            min-width: auto;
-            border: 1px solid #667eea;
-            flex-shrink: 0;
+        .filter-tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 16px;
+            background: #f0f0f0;
+            padding: 4px;
+            border-radius: 12px;
         }
 
-        .filter-btn:hover {
-            background: rgba(102, 126, 234, 0.2);
+        .filter-tab {
+            flex: 1;
+            padding: 8px 12px;
+            background: transparent;
+            color: #888;
+            font-size: 13px;
+            border-radius: 8px;
+            min-width: auto;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .filter-tab:hover {
+            color: #666;
+        }
+
+        .filter-tab.active {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .add-task-form {
@@ -300,20 +305,20 @@
         }
 
         .current-task {
-            margin-top: 16px;
-            padding: 12px 20px;
+            margin-top: 12px;
+            padding: 10px 16px;
             background: rgba(102, 126, 234, 0.1);
-            border-radius: 12px;
-            border: 1px solid rgba(102, 126, 234, 0.3);
-            min-height: 54px;
+            border-radius: 10px;
+            min-height: 44px;
             display: flex;
             flex-direction: column;
             justify-content: center;
+            box-sizing: border-box;
         }
 
         .current-task.empty {
             background: transparent;
-            border: 1px dashed rgba(102, 126, 234, 0.2);
+            border: none;
         }
 
         .current-task.empty .current-task-label,
@@ -322,13 +327,13 @@
         }
 
         .current-task-label {
-            font-size: 12px;
+            font-size: 11px;
             color: #888;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
 
         .current-task-name {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 500;
             color: #667eea;
             white-space: nowrap;
@@ -674,16 +679,21 @@
             }
 
             .panel-header {
-                flex-wrap: wrap;
-                gap: 12px;
+                flex-wrap: nowrap;
+                gap: 8px;
             }
 
-            .panel-buttons {
-                gap: 6px;
+            .history-btn {
+                padding: 6px 12px;
+                font-size: 12px;
             }
 
-            .history-btn, .filter-btn {
-                padding: 6px 10px;
+            .filter-tabs {
+                margin-bottom: 12px;
+            }
+
+            .filter-tab {
+                padding: 6px 8px;
                 font-size: 12px;
             }
 
@@ -798,10 +808,13 @@
         <div class="task-panel">
             <div class="panel-header">
                 <h3 class="panel-title">任务列表</h3>
-                <div class="panel-buttons">
-                    <button class="filter-btn" id="showCompletedBtn">显示完成</button>
-                    <button class="history-btn" id="historyBtn">历史记录</button>
-                </div>
+                <button class="history-btn" id="historyBtn">历史记录</button>
+            </div>
+
+            <div class="filter-tabs" id="filterTabs">
+                <button class="filter-tab active" data-filter="all">全部</button>
+                <button class="filter-tab" data-filter="active">未完成</button>
+                <button class="filter-tab" data-filter="completed">已完成</button>
             </div>
 
             <div class="add-task-form">
@@ -890,7 +903,7 @@
 
         const currentTaskDiv = document.getElementById('currentTask');
         const currentTaskName = document.getElementById('currentTaskName');
-        const showCompletedBtn = document.getElementById('showCompletedBtn');
+        const filterTabs = document.getElementById('filterTabs');
 
         function generateId() {
             return Date.now().toString(36) + Math.random().toString(36).substr(2);
@@ -1027,25 +1040,15 @@
             COMPLETED: 'completed'
         };
 
-        let currentFilter = TaskFilter.ALL;
-        function toggleFilter() {
-            const filters = [TaskFilter.ALL, TaskFilter.ACTIVE, TaskFilter.COMPLETED];
-            const currentIndex = filters.indexOf(currentFilter);
-            currentFilter = filters[(currentIndex + 1) % filters.length];
+        function setActiveFilter(filter) {
+            currentFilter = filter;
+            
+            filterTabs.querySelectorAll('.filter-tab').forEach(tab => {
+                const tabFilter = tab.dataset.filter;
+                tab.classList.toggle('active', tabFilter === currentFilter);
+            });
+            
             renderTasks();
-            updateFilterButton();
-        }
-
-        function updateFilterButton() {
-            const btn = document.getElementById('showCompletedBtn');
-            if (btn) {
-                const buttonTexts = {
-                    [TaskFilter.ALL]: '全部任务',
-                    [TaskFilter.ACTIVE]: '显示完成',
-                    [TaskFilter.COMPLETED]: '显示未完成'
-                };
-                btn.textContent = buttonTexts[currentFilter];
-            }
         }
 
         function updateCurrentTaskDisplay() {
@@ -1540,7 +1543,11 @@
             }
         });
 
-        showCompletedBtn.addEventListener('click', toggleFilter);
+        filterTabs.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                setActiveFilter(tab.dataset.filter);
+            });
+        });
 
         loadSettings();
         loadTasks();
@@ -1551,7 +1558,6 @@
         updateDisplay();
         renderTasks();
         updateCurrentTaskDisplay();
-        updateFilterButton();
     </script>
 </body>
 </html>
