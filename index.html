@@ -67,12 +67,22 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+            gap: 12px;
         }
 
         .panel-title {
             font-size: 20px;
             font-weight: 600;
             color: #333;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .panel-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
         }
 
         .history-btn {
@@ -82,6 +92,7 @@
             font-size: 13px;
             border-radius: 20px;
             min-width: auto;
+            flex-shrink: 0;
         }
 
         .history-btn:hover {
@@ -97,6 +108,7 @@
             border-radius: 16px;
             min-width: auto;
             border: 1px solid #667eea;
+            flex-shrink: 0;
         }
 
         .filter-btn:hover {
@@ -293,6 +305,20 @@
             background: rgba(102, 126, 234, 0.1);
             border-radius: 12px;
             border: 1px solid rgba(102, 126, 234, 0.3);
+            min-height: 54px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .current-task.empty {
+            background: transparent;
+            border: 1px dashed rgba(102, 126, 234, 0.2);
+        }
+
+        .current-task.empty .current-task-label,
+        .current-task.empty .current-task-name {
+            opacity: 0;
         }
 
         .current-task-label {
@@ -652,7 +678,7 @@
                 gap: 12px;
             }
 
-            .panel-header > div {
+            .panel-buttons {
                 gap: 6px;
             }
 
@@ -755,7 +781,7 @@
                     <div class="dot"></div>
                     <div class="dot"></div>
                 </div>
-                <div class="current-task" id="currentTask" style="display: none;">
+                <div class="current-task empty" id="currentTask">
                     <div class="current-task-label">当前任务</div>
                     <div class="current-task-name" id="currentTaskName"></div>
                 </div>
@@ -772,7 +798,7 @@
         <div class="task-panel">
             <div class="panel-header">
                 <h3 class="panel-title">任务列表</h3>
-                <div style="display: flex; gap: 8px;">
+                <div class="panel-buttons">
                     <button class="filter-btn" id="showCompletedBtn">显示完成</button>
                     <button class="history-btn" id="historyBtn">历史记录</button>
                 </div>
@@ -995,17 +1021,30 @@
             }
         }
 
-        let showCompletedTasks = false;
-        function toggleShowCompleted() {
-            showCompletedTasks = !showCompletedTasks;
+        const TaskFilter = {
+            ALL: 'all',
+            ACTIVE: 'active',
+            COMPLETED: 'completed'
+        };
+
+        let currentFilter = TaskFilter.ALL;
+        function toggleFilter() {
+            const filters = [TaskFilter.ALL, TaskFilter.ACTIVE, TaskFilter.COMPLETED];
+            const currentIndex = filters.indexOf(currentFilter);
+            currentFilter = filters[(currentIndex + 1) % filters.length];
             renderTasks();
-            updateShowCompletedButton();
+            updateFilterButton();
         }
 
-        function updateShowCompletedButton() {
+        function updateFilterButton() {
             const btn = document.getElementById('showCompletedBtn');
             if (btn) {
-                btn.textContent = showCompletedTasks ? '显示未完成' : '显示完成';
+                const buttonTexts = {
+                    [TaskFilter.ALL]: '全部任务',
+                    [TaskFilter.ACTIVE]: '显示完成',
+                    [TaskFilter.COMPLETED]: '显示未完成'
+                };
+                btn.textContent = buttonTexts[currentFilter];
             }
         }
 
@@ -1013,23 +1052,43 @@
             if (activeTaskId) {
                 const task = tasks.find(t => t.id === activeTaskId);
                 if (task && !task.isCompleted) {
-                    currentTaskDiv.style.display = 'block';
+                    currentTaskDiv.classList.remove('empty');
                     currentTaskName.textContent = task.name;
                     return;
                 }
             }
-            currentTaskDiv.style.display = 'none';
+            currentTaskDiv.classList.add('empty');
         }
 
         function renderTasks() {
-            const filteredTasks = tasks.filter(task => 
-                showCompletedTasks ? task.isCompleted : !task.isCompleted
-            );
+            let filteredTasks;
+            switch (currentFilter) {
+                case TaskFilter.ACTIVE:
+                    filteredTasks = tasks.filter(task => !task.isCompleted);
+                    break;
+                case TaskFilter.COMPLETED:
+                    filteredTasks = tasks.filter(task => task.isCompleted);
+                    break;
+                case TaskFilter.ALL:
+                default:
+                    filteredTasks = tasks;
+                    break;
+            }
 
             if (filteredTasks.length === 0) {
-                const message = showCompletedTasks 
-                    ? '暂无已完成的任务' 
-                    : '点击上方添加任务<br>选择任务后开始计时';
+                let message;
+                switch (currentFilter) {
+                    case TaskFilter.COMPLETED:
+                        message = '暂无已完成的任务';
+                        break;
+                    case TaskFilter.ACTIVE:
+                        message = '暂无未完成的任务';
+                        break;
+                    case TaskFilter.ALL:
+                    default:
+                        message = '点击上方添加任务<br>选择任务后开始计时';
+                        break;
+                }
                 taskList.innerHTML = `<div class="empty-task-hint">${message}</div>`;
                 return;
             }
@@ -1481,7 +1540,7 @@
             }
         });
 
-        showCompletedBtn.addEventListener('click', toggleShowCompleted);
+        showCompletedBtn.addEventListener('click', toggleFilter);
 
         loadSettings();
         loadTasks();
@@ -1492,6 +1551,7 @@
         updateDisplay();
         renderTasks();
         updateCurrentTaskDisplay();
+        updateFilterButton();
     </script>
 </body>
 </html>
